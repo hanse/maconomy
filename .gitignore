@@ -1,0 +1,4 @@
+node_modules
+*.log
+.maconomy-session-id
+.env
