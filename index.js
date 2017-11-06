@@ -30,7 +30,9 @@ function executeRpc(request, sessionId) {
     .then(res => res.json())
     .then(json => {
       if (!json.ok) {
-        const error = new Error(`Maconomy Error: ${json.Message}`);
+        const error = new Error(
+          `Maconomy Error: ${json.Message || json.message || 'Unknown'}`
+        );
         error.response = json;
         throw error;
       }
