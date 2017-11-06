@@ -4,9 +4,14 @@
   "bin": {
     "maconomy": "./cli.js"
   },
-  "license": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hanse/maconomy.git"
+  },
+  "license": "",
   "dependencies": {
     "chalk": "^2.3.0",
+    "cli-table": "^0.3.1",
     "commander": "^2.11.0",
     "date-fns": "^1.29.0",
     "form-urlencoded": "^2.0.4",

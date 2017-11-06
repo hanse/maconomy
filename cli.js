@@ -7,6 +7,7 @@ const fs = require('mz/fs');
 const program = require('commander');
 const chalk = require('chalk');
 const prompt = require('prompt');
+const Table = require('cli-table');
 const parse = require('date-fns/parse');
 const format = require('date-fns/format');
 const addDays = require('date-fns/add_days');
@@ -76,18 +77,21 @@ program.command('show [date]').action(
         data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM'))
       );
 
-      console.log(headers.join(' '));
+      const table = new Table({ head: headers });
 
       const lines = transformLines(data);
       lines.forEach(line => {
         const { name, projectId, task, taskDescription, daily } = line;
 
-        console.log(
-          `${projectId} ${task} ${taskDescription} ${daily
-            .map(day => day.hours)
-            .join(' ')}`
-        );
+        table.push([
+          projectId,
+          task,
+          taskDescription,
+          ...daily.map(day => (day.hours === '0.00' ? '' : day.hours))
+        ]);
       });
+
+      console.log(table.toString());
     })
   )
 );
