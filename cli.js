@@ -10,12 +10,20 @@ const prompt = require('prompt');
 const parse = require('date-fns/parse');
 const format = require('date-fns/format');
 const addDays = require('date-fns/add_days');
-const api = require('./');
+const createClient = require('./');
 const { transformLines } = require('./transformers');
 
 const { yellow, blue, green, red } = chalk;
 
 const SESSION_FILE = path.resolve(os.homedir(), '.maconomy-session-id');
+
+const rpcUrl = process.env.MACONOMY_RPC_URL;
+
+if (!rpcUrl) {
+  throw new Error('MACONOMY_RPC_URL env variable is not defined.');
+}
+
+const api = createClient({ rpcUrl });
 
 program
   .version(require('./package.json').version)

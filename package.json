@@ -8,11 +8,10 @@
   "dependencies": {
     "chalk": "^2.3.0",
     "commander": "^2.11.0",
-    "cross-fetch": "^1.1.0",
     "date-fns": "^1.29.0",
     "form-urlencoded": "^2.0.4",
+    "isomorphic-fetch": "^2.2.1",
     "mz": "^2.7.0",
-    "node-fetch": "^1.7.3",
     "prompt": "^1.0.0"
   }
 }
