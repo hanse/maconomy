@@ -26,7 +26,17 @@ function executeRpc(request, sessionId) {
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
-  }).then(res => res.json());
+  })
+    .then(res => res.json())
+    .then(json => {
+      if (!json.ok) {
+        const error = new Error(`Maconomy Error: ${json.Message}`);
+        error.response = json;
+        throw error;
+      }
+
+      return json;
+    });
 }
 
 function login(username, password) {
@@ -48,7 +58,7 @@ function login(username, password) {
   });
 }
 
-function inputTheDate(sessionId, startDate, endDate) {
+function getPeriod(sessionId, startDate, endDate) {
   return executeRpc(
     {
       inpObj: {
@@ -131,22 +141,22 @@ function saveTimesheetEntry({
   customerId,
   hours,
   projectId,
-  text
+  text,
+  lineKey
 }) {
   return executeRpc(
     {
       inpObj: {
         theDate: date,
-        InstanceKey: '',
+        InstanceKey: lineKey,
         Fields: {
           CustomerNumberVar: '90109',
           Favorite: '',
           JobNumber: projectId,
           TaskName: task,
-          DailyDescription: '',
+          DailyDescription: text,
           NumberOf: `'${hours}'`,
-          TaskDescriptionVar: text,
-          ActivityNumber: '10300',
+          //ActivityNumber: '',
           ActivityTextVar: text,
           PermanentLine: 'false',
           InternalJob: 'true',
@@ -175,6 +185,6 @@ module.exports = {
   saveTimesheetEntry,
   recentlyUsedJobSearch,
   taskSearch,
-  inputTheDate,
+  getPeriod,
   initializeTimesheetLine
 };

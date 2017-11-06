@@ -1,17 +1,23 @@
 #!/usr/bin/env node
 
 const { promisify } = require('util');
+const path = require('path');
+const os = require('os');
 const fs = require('mz/fs');
 const meow = require('meow');
 const chalk = require('chalk');
 const prompt = require('prompt');
+const parse = require('date-fns/parse');
+const format = require('date-fns/format');
+const addDays = require('date-fns/add_days');
 const api = require('./');
+const { transformLines } = require('./transformers');
 
 const cli = meow('Usage: maconomy');
 
 const { yellow, blue, green, red } = chalk;
 
-const SESSION_FILE = '.maconomy-session-id';
+const SESSION_FILE = path.resolve(os.homedir(), '.maconomy-session-id');
 
 async function getSession(username, password) {
   let sessionId;
@@ -34,7 +40,7 @@ function assertSession(sessionId) {
 }
 
 async function run(input, flags) {
-  const action = input.shift();
+  const [action, ...args] = input;
   switch (action) {
     case 'login': {
       prompt.start();
@@ -76,28 +82,58 @@ async function run(input, flags) {
       const sessionId = await getSession();
       assertSession(sessionId);
 
-      if (input.length < 4) {
+      if (args.length < 4) {
         console.log('Usage: maconomy add projectId task hours date text');
         process.exit(0);
       }
 
-      const [projectId, task, hours, date, text] = input.map(String);
+      const [projectId, task, hours, date, text, lineKey] = args.map(String);
 
-      return api
-        .saveTimesheetEntry({
-          sessionId,
-          projectId,
-          hours,
-          date,
-          task,
-          text
-        })
-        .then(
-          result =>
-            result.ok
-              ? console.log(green('Entry added successfully'))
-              : console.error(result)
+      const result = await api.saveTimesheetEntry({
+        sessionId,
+        projectId,
+        hours,
+        date,
+        task,
+        text,
+        lineKey
+      });
+
+      console.log(result);
+      console.log();
+      console.log(
+        green(`Entry added successfully to ${result.Line.InstanceKey}`)
+      );
+      return;
+    }
+
+    case 'show': {
+      const sessionId = await getSession();
+      assertSession(sessionId);
+
+      const date = parse(args[0] || new Date());
+
+      const data = await api.getPeriod(
+        sessionId,
+        format(date, 'YYYY.MM.DD'),
+        format(addDays(date, 4), 'YYYY.MM.DD')
+      );
+
+      const lines = transformLines(data);
+
+      console.log(JSON.stringify(data, null, 2));
+
+      lines.forEach(line => {
+        const { name, projectId, task, taskDescription, daily } = line;
+
+        console.log(
+          `${projectId} ${task} ${taskDescription} ${daily
+            .map(day => day.hours)
+            .join(' ')}`
         );
+      });
+
+      break;
     }
 
     default:
@@ -110,6 +146,11 @@ async function main() {
     await run(cli.input.slice(), cli.flags);
   } catch (error) {
     console.error(red(error.message));
+
+    if (error.response) {
+      console.error();
+      console.error(JSON.stringify(error.response, null, 2));
+    }
   }
 }
 

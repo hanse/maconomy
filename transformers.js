@@ -16,3 +16,7 @@ function transformLines(response) {
     };
   });
 }
+
+module.exports = {
+  transformLines
+};
