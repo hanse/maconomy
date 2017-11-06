@@ -73,21 +73,22 @@ program.command('show [date]').action(
 
       program.debug && console.log(JSON.stringify(data, null, 2));
 
-      const headers = ['Project', 'Task', 'Description'].concat(
-        data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM'))
-      );
+      const headers = ['Project', 'Task', 'Description']
+        .concat(data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM')))
+        .concat(['Key']);
 
       const table = new Table({ head: headers });
 
       const lines = transformLines(data);
       lines.forEach(line => {
-        const { name, projectId, task, taskDescription, daily } = line;
+        const { key, name, projectId, task, taskDescription, daily } = line;
 
         table.push([
           projectId,
           task,
           taskDescription,
-          ...daily.map(day => (day.hours === '0.00' ? '' : day.hours))
+          ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
+          key
         ]);
       });
 
@@ -121,6 +122,16 @@ program
       })
     )
   );
+
+program.command('delete <lineKey>').action(
+  createAction(
+    withSessionId(async (sessionId, lineKey) => {
+      const result = await api.deleteTimesheetEntry(sessionId, lineKey);
+      program.debug && console.log(result);
+      console.log(`Deleted ${lineKey}`);
+    })
+  )
+);
 
 program.command('search [query]').action(
   createAction(

@@ -3,6 +3,7 @@ function transformLines(response) {
   return lines.map(line => {
     const fields = line.Fields;
     return {
+      key: line.InstanceKey,
       name: line.DisplayName,
       projectId: fields.JobNumber,
       task: fields.TaskName,

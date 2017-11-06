@@ -181,12 +181,34 @@ module.exports = function createClient({ rpcUrl }) {
     );
   }
 
+  function deleteTimesheetEntry(sessionId, lineKey) {
+    return executeRpc(
+      {
+        inpObj: {
+          theDate: '2017.11.06',
+          InstanceKey: lineKey || '',
+          reopenIfSubmitted: false,
+          operation: 'deletetimesheetentry',
+          clean: false,
+          calfocus: false,
+          impersonate: false,
+          maccharset: 'UTF-8',
+          lang: 'W',
+          locale: 'en_US',
+          sessionid: sessionId
+        }
+      },
+      sessionId
+    );
+  }
+
   return {
     login,
     saveTimesheetEntry,
     recentlyUsedJobSearch,
     taskSearch,
     getPeriod,
-    initializeTimesheetLine
+    initializeTimesheetLine,
+    deleteTimesheetEntry
   };
 };
