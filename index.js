@@ -78,7 +78,7 @@ module.exports = function createClient({ rpcUrl }) {
     );
   }
 
-  function recentlyUsedJobSearch(value, sessionId) {
+  function recentlyUsedJobSearch(sessionId, value) {
     return executeRpc(
       {
         inpObj: {
@@ -112,7 +112,7 @@ module.exports = function createClient({ rpcUrl }) {
     );
   }
 
-  function taskSearch(value, projectId, sessionId) {
+  function taskSearch(sessionId, projectId, value) {
     return executeRpc(
       {
         inpObj: {
@@ -149,16 +149,16 @@ module.exports = function createClient({ rpcUrl }) {
       {
         inpObj: {
           theDate: date,
-          InstanceKey: lineKey,
+          InstanceKey: lineKey || '',
           Fields: {
             CustomerNumberVar: '90109',
             Favorite: '',
             JobNumber: projectId,
             TaskName: task,
-            DailyDescription: text,
+            DailyDescription: text || '',
             NumberOf: `'${hours}'`,
             //ActivityNumber: '',
-            ActivityTextVar: text,
+            ActivityTextVar: text || '',
             PermanentLine: 'false',
             InternalJob: 'true',
             LineCurrentApprovalStatusDescriptionVar: '',

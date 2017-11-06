@@ -101,25 +101,58 @@ program
   .action(
     createAction(
       withSessionId(async (sessionId, ...args) => {
-        const [projectId, task, hours, date, text, lineKey] = args.map(String);
+        const [projectId, task, hours, date, text, lineKey] = args;
 
         const result = await api.saveTimesheetEntry({
           sessionId,
           projectId,
-          hours,
-          date,
-          task,
+          hours: String(hours),
+          date: String(date),
+          task: String(task),
           text,
           lineKey
         });
 
         program.debug && console.log(result);
+        const line = result.Line ? result.Line.InstanceKey : null;
         console.log(
-          green(`Entry added successfully to ${result.Line.InstanceKey}`)
+          green(`Entry added successfully to ${line || 'the sheet.'}`)
         );
       })
     )
   );
+
+program.command('search [query]').action(
+  createAction(
+    withSessionId(async (sessionId, query) => {
+      const result = await api.recentlyUsedJobSearch(sessionId, query);
+      const items = result.SearchData.map(item => ({
+        projectId: item.KeyValue,
+        name: item.DisplayValue
+      }));
+
+      items.forEach(({ projectId, name }) => {
+        console.log(`${projectId} ${name}`);
+      });
+    })
+  )
+);
+
+program.command('tasks <projectId> [query]').action(
+  createAction(
+    withSessionId(async (sessionId, projectId, query) => {
+      const result = await api.taskSearch(sessionId, projectId, query);
+      const items = result.SearchData.map(item => ({
+        projectId: item.KeyValue,
+        name: item.DisplayValue
+      }));
+
+      items.forEach(({ projectId, name }) => {
+        console.log(`${projectId} ${name}`);
+      });
+    })
+  )
+);
 
 program.parse(process.argv);
 
