@@ -1,6 +1,10 @@
 {
   "name": "maconomy",
   "version": "0.0.1",
+  "author": {
+    "name": "Hanse",
+    "email": "hanse19@gmail.com"
+  },
   "bin": {
     "maconomy": "./cli.js"
   },

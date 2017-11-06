@@ -93,7 +93,7 @@ module.exports = function createClient({ rpcUrl }) {
     );
   }
 
-  function initializeTimesheetLine(projectId, date, sessionId) {
+  function initializeTimesheetLine(sessionId, projectId, date) {
     return executeRpc(
       {
         inpObj: {
