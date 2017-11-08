@@ -73,21 +73,35 @@ program.command('show [date]').action(
 
       program.debug && console.log(JSON.stringify(data, null, 2));
 
-      const headers = ['Project', 'Task', 'Description']
-        .concat(data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM')))
-        .concat(['Key']);
+      const headers = [
+        'Project',
+        'Task',
+        'Description',
+        ...data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM')),
+        'Text',
+        'Key'
+      ];
 
       const table = new Table({ head: headers });
 
       const lines = transformLines(data);
       lines.forEach(line => {
-        const { key, name, projectId, task, taskDescription, daily } = line;
+        const {
+          key,
+          name,
+          projectId,
+          task,
+          entryText,
+          taskDescription,
+          daily
+        } = line;
 
         table.push([
           projectId,
           task,
           taskDescription,
           ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
+          entryText,
           key
         ]);
       });

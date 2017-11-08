@@ -8,6 +8,7 @@ function transformLines(response) {
       projectId: fields.JobNumber,
       task: fields.TaskName,
       taskDescription: fields.TaskDescriptionVar,
+      entryText: fields.EntryText,
       customer: fields.CustomerNameVar,
       daily: fields.dailyFields.map(dailyField => ({
         date: dailyField.TheDate,

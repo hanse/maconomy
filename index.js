@@ -68,7 +68,7 @@ module.exports = function createClient({ rpcUrl }) {
           endDate: endDate,
           includeLineMetadata: true,
           lineFields:
-            'JobNameVar,JobNumber,TaskName,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine',
+            'JobNameVar,JobNumber,TaskName,EntryText,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine',
           operation: 'getperiod',
           sessionid: sessionId,
           ...commonProps
@@ -143,6 +143,7 @@ module.exports = function createClient({ rpcUrl }) {
     hours,
     projectId,
     text,
+    dailyDescription,
     lineKey
   }) {
     return executeRpc(
@@ -151,14 +152,12 @@ module.exports = function createClient({ rpcUrl }) {
           theDate: date,
           InstanceKey: lineKey || '',
           Fields: {
-            CustomerNumberVar: '90109',
             Favorite: '',
             JobNumber: projectId,
             TaskName: task,
-            DailyDescription: text || '',
+            DailyDescription: dailyDescription || '',
             NumberOf: `'${hours}'`,
-            //ActivityNumber: '',
-            ActivityTextVar: text || '',
+            EntryText: text,
             PermanentLine: 'false',
             InternalJob: 'true',
             LineCurrentApprovalStatusDescriptionVar: '',
@@ -171,7 +170,7 @@ module.exports = function createClient({ rpcUrl }) {
           },
           reopenIfSubmitted: false,
           DisplayFields:
-            'JobNameVar,JobNumber,TaskName,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine',
+            'JobNameVar,EntryText,JobNumber,TaskName,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine',
           operation: 'savetimesheetentry',
           sessionid: sessionId,
           ...commonProps
