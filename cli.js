@@ -62,7 +62,7 @@ program.command('login').action(
 
 program.command('show [date]').action(
   createAction(
-    withSessionId(async (sessionId, date) => {
+    withSessionId(async (sessionId, date, options) => {
       date = parse(date || new Date());
 
       const data = await api.getPeriod(
@@ -102,7 +102,7 @@ program.command('show [date]').action(
           taskDescription,
           ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
           entryText,
-          key
+          key.replace('TimeSheetLine', '')
         ]);
       });
 
@@ -125,7 +125,7 @@ program
           date: String(date),
           task: String(task),
           text,
-          lineKey
+          lineKey: `TimeSheetLine${lineKey}`
         });
 
         program.debug && console.log(result);
@@ -140,7 +140,10 @@ program
 program.command('delete <lineKey>').action(
   createAction(
     withSessionId(async (sessionId, lineKey) => {
-      const result = await api.deleteTimesheetEntry(sessionId, lineKey);
+      const result = await api.deleteTimesheetEntry(
+        sessionId,
+        `TimeSheetLine${lineKey}`
+      );
       program.debug && console.log(result);
       console.log(`Deleted ${lineKey}`);
     })
