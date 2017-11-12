@@ -21,7 +21,8 @@ const SESSION_FILE = path.resolve(os.homedir(), '.maconomy-session-id');
 const rpcUrl = process.env.MACONOMY_RPC_URL;
 
 if (!rpcUrl) {
-  throw new Error('MACONOMY_RPC_URL env variable is not defined.');
+  console.error(red('MACONOMY_RPC_URL env variable is not defined.'));
+  process.exit(1);
 }
 
 const api = createClient({ rpcUrl });
@@ -59,56 +60,7 @@ program.command('login').action(
   })
 );
 
-program.command('show [date]').action(
-  createAction(
-    withSessionId(async (sessionId, date, options) => {
-      date = parse(date || new Date());
-
-      const data = await api.getPeriod(
-        sessionId,
-        format(date, 'YYYY.MM.DD'),
-        format(addDays(date, 7), 'YYYY.MM.DD')
-      );
-
-      program.debug && console.log(JSON.stringify(data, null, 2));
-
-      const headers = [
-        'Project',
-        'Task',
-        'Description',
-        ...data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM')),
-        'Text',
-        'Key'
-      ];
-
-      const table = new Table({ head: headers });
-
-      const lines = transformLines(data);
-      lines.forEach(line => {
-        const {
-          key,
-          name,
-          projectId,
-          task,
-          entryText,
-          taskDescription,
-          daily
-        } = line;
-
-        table.push([
-          projectId,
-          task,
-          taskDescription,
-          ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
-          entryText,
-          key.replace('TimeSheetLine', '')
-        ]);
-      });
-
-      console.log(table.toString());
-    })
-  )
-);
+program.command('show [date]').action(createAction(withSessionId(show)));
 
 program
   .command('add <projectId> <task> <hours> <date> [text] [lineKey]')
@@ -129,9 +81,7 @@ program
 
         program.debug && console.log(result);
         const line = result.Line ? result.Line.InstanceKey : null;
-        console.log(
-          green(`Entry added successfully to ${line || 'the sheet.'}`)
-        );
+        await show(sessionId, date);
       })
     )
   );
@@ -144,7 +94,7 @@ program.command('delete <lineKey>').action(
         `TimeSheetLine${lineKey}`
       );
       program.debug && console.log(result);
-      console.log(`Deleted ${lineKey}`);
+      await show(sessionId);
     })
   )
 );
@@ -223,4 +173,54 @@ function withSessionId(action) {
 
     return action(sessionId, ...args);
   };
+}
+
+async function show(sessionId, date) {
+  date = parse(date || new Date());
+
+  const data = await api.getPeriod(
+    sessionId,
+    format(date, 'YYYY.MM.DD'),
+    format(addDays(date, 7), 'YYYY.MM.DD')
+  );
+
+  program.debug && console.log(JSON.stringify(data, null, 2));
+
+  const headers = [
+    'Project',
+    'Task',
+    'Description',
+    ...data.DayTotals.map(day => format(parse(day.TheDate), 'DD/MM')),
+    'Text',
+    'Key'
+  ];
+
+  const table = new Table({ head: headers });
+
+  const lines = transformLines(data);
+  lines.forEach(line => {
+    const {
+      key,
+      name,
+      projectId,
+      task,
+      entryText,
+      taskDescription,
+      daily
+    } = line;
+
+    table.push([
+      projectId,
+      task,
+      taskDescription,
+      ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
+      entryText,
+      key
+    ]);
+  });
+
+  console.log(table.toString());
+  console.log(
+    data.submitted === 'N' ? yellow('Not submitted') : green('Submitted')
+  );
 }
