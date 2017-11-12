@@ -49,13 +49,6 @@ module.exports = function createClient({ rpcUrl }) {
         operation: 'login',
         ...commonProps
       }
-    }).then(json => {
-      return {
-        sessionId: json.sessionid,
-        employeeName: json.EmployeeName,
-        employeeNumber: json.EmployeeNumber,
-        company: json.Company
-      };
     });
   }
 
@@ -122,12 +115,7 @@ module.exports = function createClient({ rpcUrl }) {
             { Name: 'JobNumber', Value: String(projectId) }
           ],
           operation: 'search',
-          clean: false,
-          calfocus: false,
-          impersonate: false,
-          maccharset: 'UTF-8',
-          lang: 'en_GB_MCS',
-          locale: 'en_US',
+          ...commonProps,
           sessionid: sessionId
         }
       },
@@ -188,12 +176,7 @@ module.exports = function createClient({ rpcUrl }) {
           InstanceKey: lineKey || '',
           reopenIfSubmitted: false,
           operation: 'deletetimesheetentry',
-          clean: false,
-          calfocus: false,
-          impersonate: false,
-          maccharset: 'UTF-8',
-          lang: 'W',
-          locale: 'en_US',
+          ...commonProps,
           sessionid: sessionId
         }
       },
