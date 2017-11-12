@@ -221,6 +221,8 @@ async function show(sessionId, date) {
 
   console.log(table.toString());
   console.log(
-    data.submitted === 'N' ? yellow('Not submitted') : green('Submitted')
+    `Week ${data.weekNumber}${data.part.trim()}: ${data.submitted === 'N'
+      ? yellow('Not submitted')
+      : green('Submitted')}`
   );
 }
