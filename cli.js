@@ -12,7 +12,7 @@ const parse = require('date-fns/parse');
 const format = require('date-fns/format');
 const addDays = require('date-fns/add_days');
 const createClient = require('./');
-const { transformLines } = require('./transformers');
+const { transformLogin, transformLines } = require('./transformers');
 
 const { yellow, blue, green, red } = chalk;
 
@@ -45,12 +45,11 @@ program.command('login').action(
       }
     });
 
-    const {
-      sessionId,
-      employeeName,
-      employeeNumber,
-      company
-    } = await api.login(username, password);
+    const response = await api.login(username, password);
+
+    const { sessionId, employeeName, employeeNumber, company } = transformLogin(
+      response
+    );
 
     await storeSession(sessionId);
 

@@ -1,3 +1,12 @@
+function transformLogin(response) {
+  return {
+    sessionId: response.sessionid,
+    employeeName: response.EmployeeName,
+    employeeNumber: response.EmployeeNumber,
+    company: response.Company
+  };
+}
+
 function transformLines(response) {
   const lines = response.Lines;
   return lines.map(line => {
@@ -20,5 +29,6 @@ function transformLines(response) {
 }
 
 module.exports = {
+  transformLogin,
   transformLines
 };
