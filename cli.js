@@ -76,7 +76,7 @@ program
           date: String(date),
           task: String(task),
           text,
-          lineKey: `TimeSheetLine${lineKey}`
+          lineKey: lineKey ? `TimeSheetLine${lineKey}` : ''
         });
 
         program.debug && console.log(result);
