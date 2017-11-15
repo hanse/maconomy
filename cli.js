@@ -215,7 +215,7 @@ async function show(sessionId, date) {
       taskDescription,
       ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
       entryText,
-      key
+      key ? key.replace('TimeSheetLine', '') : ''
     ]);
   });
 
