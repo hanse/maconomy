@@ -168,11 +168,11 @@ module.exports = function createClient({ rpcUrl }) {
     );
   }
 
-  function deleteTimesheetEntry(sessionId, lineKey) {
+  function deleteTimesheetEntry(sessionId, lineKey, date) {
     return executeRpc(
       {
         inpObj: {
-          theDate: '2017.11.06',
+          theDate: date,
           InstanceKey: lineKey || '',
           reopenIfSubmitted: false,
           operation: 'deletetimesheetentry',

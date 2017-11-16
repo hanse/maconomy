@@ -86,12 +86,13 @@ program
     )
   );
 
-program.command('delete <lineKey>').action(
+program.command('delete <lineKey> [date]').action(
   createAction(
-    withSessionId(async (sessionId, lineKey) => {
+    withSessionId(async (sessionId, lineKey, date) => {
       const result = await api.deleteTimesheetEntry(
         sessionId,
-        `TimeSheetLine${lineKey}`
+        `TimeSheetLine${lineKey}`,
+        format(date || new Date(), 'YYYY.MM.DD')
       );
       program.debug && console.log(result);
       await show(sessionId);
