@@ -11,6 +11,7 @@ const Table = require('cli-table');
 const parse = require('date-fns/parse');
 const format = require('date-fns/format');
 const addDays = require('date-fns/add_days');
+const startOfWeek = require('date-fns/start_of_week');
 const createClient = require('./');
 const { transformLogin, transformLines } = require('./transformers');
 const log = response => console.log(JSON.stringify(response, null, 2));
@@ -103,6 +104,10 @@ program.command('delete <lineKey> [date]').action(
   )
 );
 
+program
+  .command('delete-all [date]')
+  .action(createAction(withSessionId(deleteAll)));
+
 program.command('search [query]').action(
   createAction(
     withSessionId(async (sessionId, query) => {
@@ -136,6 +141,66 @@ program.command('tasks <projectId> [query]').action(
     })
   )
 );
+
+program
+  .command('import')
+  .option('--from <format>', 'format to convert from (currently csv only)')
+  .option('--start-date [startDate]', 'the date of the first column')
+  .option('--keep', 'keep existing lines when importing')
+  .action(
+    createAction(
+      withSessionId(async (sessionId, options) => {
+        const { parse } = require('csv-string');
+        const lines = parse(await readStream(process.stdin));
+
+        const add = async (projectId, task, hours, date, text, lineKey) => {
+          const response = await api.saveTimesheetEntry({
+            sessionId,
+            projectId,
+            hours: String(hours),
+            date: String(date),
+            task: String(task),
+            text,
+            lineKey: toTimeSheetLineId(lineKey)
+          });
+
+          return fromTimeSheetLineId(
+            response.Line ? response.Line.InstanceKey : null
+          );
+        };
+
+        const date = options.startDate
+          ? parse(options.startDate)
+          : startOfWeek(new Date(), { weekStartsOn: 1 });
+
+        if (!options.keep) {
+          await deleteAll(sessionId, date);
+        }
+
+        for (const line of lines) {
+          const [projectId, task, ...rest] = line;
+          const [firstDayOfWeek, ...otherDays] = rest.slice(0, 7);
+          const text = rest[7];
+          const lineId = await add(
+            projectId,
+            task,
+            firstDayOfWeek,
+            format(date, 'YYYY.MM.DD'),
+            text
+          );
+
+          await Promise.all(
+            otherDays.map((otherDay, index) => {
+              const newDate = format(addDays(date, index + 1), 'YYYY.MM.DD');
+              return add(projectId, task, otherDay, newDate, text, lineId);
+            })
+          );
+        }
+
+        await show(sessionId, date);
+      })
+    )
+  );
 
 program.parse(process.argv);
 
@@ -189,6 +254,21 @@ function withSessionId(action) {
   };
 }
 
+function readStream(stdin = process.stdin) {
+  return new Promise(resolve => {
+    stdin.setEncoding('utf8');
+    let chunks = '';
+
+    stdin.on('data', chunk => {
+      chunks += chunk;
+    });
+
+    stdin.on('end', () => {
+      resolve(chunks);
+    });
+  });
+}
+
 async function show(sessionId, date) {
   date = parse(date || new Date());
 
@@ -238,5 +318,31 @@ async function show(sessionId, date) {
     `Week ${data.weekNumber}${data.part.trim()}: ${
       data.submitted === 'N' ? yellow('Not submitted') : green('Submitted')
     }`
+  );
+}
+
+async function deleteAll(sessionId, date) {
+  date = parse(date || new Date());
+
+  const data = await api.getPeriod(
+    sessionId,
+    format(date, 'YYYY.MM.DD'),
+    format(addDays(date, 7), 'YYYY.MM.DD')
+  );
+
+  const lines = transformLines(data);
+
+  const lineKeys = lines
+    .map(line => fromTimeSheetLineId(line.key))
+    .filter(Boolean);
+
+  await Promise.all(
+    lineKeys.map(lineKey => {
+      return api.deleteTimesheetEntry(
+        sessionId,
+        toTimeSheetLineId(lineKey),
+        format(date, 'YYYY.MM.DD')
+      );
+    })
   );
 }

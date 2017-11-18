@@ -71,6 +71,10 @@ concat-map@0.0.1:
   version "0.0.1"
   resolved "https://registry.yarnpkg.com/concat-map/-/concat-map-0.0.1.tgz#d8a96bd77fd68df7793a73036a3ba0d5405d477b"
 
+csv-string@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/csv-string/-/csv-string-2.3.2.tgz#7ee58bd957a04de3f9935b7ea1ab29180156894c"
+
 cycle@1.0.x:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/cycle/-/cycle-1.0.3.tgz#21e80b2be8580f98b468f379430662b046c34ad2"
