@@ -1,5 +1,9 @@
 require('isomorphic-fetch');
 const formurlencoded = require('form-urlencoded');
+const format = require('date-fns/format');
+const parse = require('date-fns/parse');
+
+const formatDate = date => format(parse(date), 'YYYY.MM.DD');
 
 module.exports = function createClient({ rpcUrl }) {
   const commonProps = {
@@ -56,9 +60,9 @@ module.exports = function createClient({ rpcUrl }) {
     return executeRpc(
       {
         inpObj: {
-          inputTheDate: startDate,
-          startDate: startDate,
-          endDate: endDate,
+          inputTheDate: formatDate(startDate),
+          startDate: formatDate(startDate),
+          endDate: formatDate(endDate),
           includeLineMetadata: true,
           lineFields:
             'JobNameVar,JobNumber,TaskName,EntryText,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine',
@@ -78,25 +82,6 @@ module.exports = function createClient({ rpcUrl }) {
           SearchName: 'RecentlyUsedJobsSearch',
           Fields: [{ Name: 'SearchText', Value: value }],
           operation: 'search',
-          sessionid: sessionId,
-          ...commonProps
-        }
-      },
-      sessionId
-    );
-  }
-
-  function initializeTimesheetLine(sessionId, projectId, date) {
-    return executeRpc(
-      {
-        inpObj: {
-          Fields:
-            'InstanceKey,JobNameVar,JobNumber,TaskName,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine,LineCurrentApprovalStatusDescriptionVar',
-          JobNumber: projectId,
-          Favorite: '',
-          StartDate: '2017.11.13',
-          CurrentDate: '2017.11.18',
-          operation: 'initializeTimeSheetLine',
           sessionid: sessionId,
           ...commonProps
         }
@@ -127,7 +112,6 @@ module.exports = function createClient({ rpcUrl }) {
     sessionId,
     date,
     task,
-    customerId,
     hours,
     projectId,
     text,
@@ -137,7 +121,7 @@ module.exports = function createClient({ rpcUrl }) {
     return executeRpc(
       {
         inpObj: {
-          theDate: date,
+          theDate: formatDate(date),
           InstanceKey: lineKey || '',
           Fields: {
             Favorite: '',
@@ -153,7 +137,7 @@ module.exports = function createClient({ rpcUrl }) {
             CommentProjectManager: '',
             Invoiceable: 'false',
             ApprovalStatus: '',
-            EntryDate: date,
+            EntryDate: formatDate(date),
             createfavorite: 'undefined'
           },
           reopenIfSubmitted: false,
@@ -172,7 +156,7 @@ module.exports = function createClient({ rpcUrl }) {
     return executeRpc(
       {
         inpObj: {
-          theDate: date,
+          theDate: formatDate(date),
           InstanceKey: lineKey || '',
           reopenIfSubmitted: false,
           operation: 'deletetimesheetentry',
@@ -201,8 +185,8 @@ module.exports = function createClient({ rpcUrl }) {
     return executeRpc(
       {
         inpObj: {
-          fromDate: fromDate,
-          toDate: toDate,
+          fromDate: formatDate(fromDate),
+          toDate: formatDate(toDate),
           operation: 'gettimesheettotals',
           ...commonProps,
           sessionid: sessionId
@@ -218,7 +202,6 @@ module.exports = function createClient({ rpcUrl }) {
     recentlyUsedJobSearch,
     taskSearch,
     getPeriod,
-    initializeTimesheetLine,
     deleteTimesheetEntry
   };
 };

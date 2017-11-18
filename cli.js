@@ -96,7 +96,7 @@ program.command('delete <lineKey> [date]').action(
       const response = await api.deleteTimesheetEntry(
         sessionId,
         toTimeSheetLineId(lineKey),
-        format(date || new Date(), 'YYYY.MM.DD')
+        date || new Date()
       );
       program.debug && log(response);
       await show(sessionId);
@@ -181,17 +181,11 @@ program
           const [projectId, task, ...rest] = line;
           const [firstDayOfWeek, ...otherDays] = rest.slice(0, 7);
           const text = rest[7];
-          const lineId = await add(
-            projectId,
-            task,
-            firstDayOfWeek,
-            format(date, 'YYYY.MM.DD'),
-            text
-          );
+          const lineId = await add(projectId, task, firstDayOfWeek, date, text);
 
           await Promise.all(
             otherDays.map((otherDay, index) => {
-              const newDate = format(addDays(date, index + 1), 'YYYY.MM.DD');
+              const newDate = addDays(date, index + 1);
               return add(projectId, task, otherDay, newDate, text, lineId);
             })
           );
@@ -272,11 +266,7 @@ function readStream(stdin = process.stdin) {
 async function show(sessionId, date) {
   date = parse(date || new Date());
 
-  const data = await api.getPeriod(
-    sessionId,
-    format(date, 'YYYY.MM.DD'),
-    format(addDays(date, 7), 'YYYY.MM.DD')
-  );
+  const data = await api.getPeriod(sessionId, date, addDays(date, 7));
 
   program.debug && console.log(JSON.stringify(data, null, 2));
 
@@ -324,11 +314,7 @@ async function show(sessionId, date) {
 async function deleteAll(sessionId, date) {
   date = parse(date || new Date());
 
-  const data = await api.getPeriod(
-    sessionId,
-    format(date, 'YYYY.MM.DD'),
-    format(addDays(date, 7), 'YYYY.MM.DD')
-  );
+  const data = await api.getPeriod(sessionId, date, addDays(date, 7));
 
   const lines = transformLines(data);
 
@@ -341,7 +327,7 @@ async function deleteAll(sessionId, date) {
       return api.deleteTimesheetEntry(
         sessionId,
         toTimeSheetLineId(lineKey),
-        format(date, 'YYYY.MM.DD')
+        date
       );
     })
   );
