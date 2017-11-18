@@ -13,6 +13,7 @@ const format = require('date-fns/format');
 const addDays = require('date-fns/add_days');
 const createClient = require('./');
 const { transformLogin, transformLines } = require('./transformers');
+const log = response => console.log(JSON.stringify(response, null, 2));
 
 const { yellow, blue, green, red } = chalk;
 
@@ -48,6 +49,8 @@ program.command('login').action(
 
     const response = await api.login(username, password);
 
+    program.debug && log(response);
+
     const { sessionId, employeeName, employeeNumber, company } = transformLogin(
       response
     );
@@ -69,7 +72,7 @@ program
       withSessionId(async (sessionId, ...args) => {
         const [projectId, task, hours, date, text, lineKey] = args;
 
-        const result = await api.saveTimesheetEntry({
+        const response = await api.saveTimesheetEntry({
           sessionId,
           projectId,
           hours: String(hours),
@@ -79,8 +82,8 @@ program
           lineKey: lineKey ? `TimeSheetLine${lineKey}` : ''
         });
 
-        program.debug && console.log(result);
-        const line = result.Line ? result.Line.InstanceKey : null;
+        program.debug && log(response);
+        const line = response.Line ? response.Line.InstanceKey : null;
         await show(sessionId, date);
       })
     )
@@ -89,12 +92,12 @@ program
 program.command('delete <lineKey> [date]').action(
   createAction(
     withSessionId(async (sessionId, lineKey, date) => {
-      const result = await api.deleteTimesheetEntry(
+      const response = await api.deleteTimesheetEntry(
         sessionId,
         `TimeSheetLine${lineKey}`,
         format(date || new Date(), 'YYYY.MM.DD')
       );
-      program.debug && console.log(result);
+      program.debug && log(response);
       await show(sessionId);
     })
   )
@@ -103,12 +106,13 @@ program.command('delete <lineKey> [date]').action(
 program.command('search [query]').action(
   createAction(
     withSessionId(async (sessionId, query) => {
-      const result = await api.recentlyUsedJobSearch(sessionId, query);
-      const items = result.SearchData.map(item => ({
+      const response = await api.recentlyUsedJobSearch(sessionId, query);
+      const items = response.SearchData.map(item => ({
         projectId: item.KeyValue,
         name: item.DisplayValue
       }));
 
+      program.debug && log(response);
       items.forEach(({ projectId, name }) => {
         console.log(`${projectId} ${name}`);
       });
@@ -119,12 +123,13 @@ program.command('search [query]').action(
 program.command('tasks <projectId> [query]').action(
   createAction(
     withSessionId(async (sessionId, projectId, query) => {
-      const result = await api.taskSearch(sessionId, projectId, query);
-      const items = result.SearchData.map(item => ({
+      const response = await api.taskSearch(sessionId, projectId, query);
+      const items = response.SearchData.map(item => ({
         projectId: item.KeyValue,
         name: item.DisplayValue
       }));
 
+      program.debug && log(response);
       items.forEach(({ projectId, name }) => {
         console.log(`${projectId} ${name}`);
       });
@@ -222,8 +227,8 @@ async function show(sessionId, date) {
 
   console.log(table.toString());
   console.log(
-    `Week ${data.weekNumber}${data.part.trim()}: ${data.submitted === 'N'
-      ? yellow('Not submitted')
-      : green('Submitted')}`
+    `Week ${data.weekNumber}${data.part.trim()}: ${
+      data.submitted === 'N' ? yellow('Not submitted') : green('Submitted')
+    }`
   );
 }
