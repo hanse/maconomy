@@ -164,8 +164,8 @@ program
 
 program
   .command('import')
-  .description('import timesheets from various formats')
-  .option('--from <format>', 'format to convert from (currently csv only)')
+  .description('import timesheets in various formats from stdin')
+  .option('--format <format>', 'format to convert from (currently csv only)')
   .option('--start-date [startDate]', 'the date of the first column')
   .option('--keep', 'keep existing lines when importing')
   .action(
