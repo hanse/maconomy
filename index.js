@@ -91,11 +91,11 @@ module.exports = function createClient({ rpcUrl }) {
       {
         inpObj: {
           Fields:
-            'JobNameVar,JobNumber,TaskName,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine,LineCurrentApprovalStatusDescriptionVar',
+            'InstanceKey,JobNameVar,JobNumber,TaskName,TaskDescriptionVar,CustomerNameVar,Invoiceable,ApprovalStatus,CommentProjectManager,TheDate,NumberOf,DailyDescription,ActivityNumber,ActivityTextVar,PermanentLine,LineCurrentApprovalStatusDescriptionVar',
           JobNumber: projectId,
           Favorite: '',
-          StartDate: date,
-          CurrentDate: date,
+          StartDate: '2017.11.13',
+          CurrentDate: '2017.11.18',
           operation: 'initializeTimeSheetLine',
           sessionid: sessionId,
           ...commonProps
@@ -176,6 +176,34 @@ module.exports = function createClient({ rpcUrl }) {
           InstanceKey: lineKey || '',
           reopenIfSubmitted: false,
           operation: 'deletetimesheetentry',
+          ...commonProps,
+          sessionid: sessionId
+        }
+      },
+      sessionId
+    );
+  }
+
+  function getTimesheetPeriods(sessionId) {
+    return executeRpc(
+      {
+        inpObj: {
+          operation: 'gettimesheetperiods',
+          ...commonProps,
+          sessionid: sessionId
+        }
+      },
+      sessionId
+    );
+  }
+
+  function getTimesheetTotals(sessionId, fromDate, toDate) {
+    return executeRpc(
+      {
+        inpObj: {
+          fromDate: fromDate,
+          toDate: toDate,
+          operation: 'gettimesheettotals',
           ...commonProps,
           sessionid: sessionId
         }
