@@ -79,7 +79,7 @@ program
           date: String(date),
           task: String(task),
           text,
-          lineKey: lineKey ? `TimeSheetLine${lineKey}` : ''
+          lineKey: toTimeSheetLineId(lineKey)
         });
 
         program.debug && log(response);
@@ -94,7 +94,7 @@ program.command('delete <lineKey> [date]').action(
     withSessionId(async (sessionId, lineKey, date) => {
       const response = await api.deleteTimesheetEntry(
         sessionId,
-        `TimeSheetLine${lineKey}`,
+        toTimeSheetLineId(lineKey),
         format(date || new Date(), 'YYYY.MM.DD')
       );
       program.debug && log(response);
@@ -151,6 +151,14 @@ async function getSession(username, password) {
 
 function storeSession(sessionId) {
   return fs.writeFile(SESSION_FILE, sessionId);
+}
+
+function fromTimeSheetLineId(timeSheetLineId) {
+  return timeSheetLineId ? timeSheetLineId.replace('TimeSheetLine', '') : '';
+}
+
+function toTimeSheetLineId(key) {
+  return key ? `TimeSheetLine${key}` : '';
 }
 
 function createAction(action) {
@@ -221,7 +229,7 @@ async function show(sessionId, date) {
       taskDescription,
       ...daily.map(day => (day.hours === '0.00' ? '' : day.hours)),
       entryText,
-      key ? key.replace('TimeSheetLine', '') : ''
+      fromTimeSheetLineId(key)
     ]);
   });
 
