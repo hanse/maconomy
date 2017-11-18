@@ -202,6 +202,8 @@ module.exports = function createClient({ rpcUrl }) {
     recentlyUsedJobSearch,
     taskSearch,
     getPeriod,
-    deleteTimesheetEntry
+    deleteTimesheetEntry,
+    getTimesheetTotals,
+    getTimesheetPeriods
   };
 };

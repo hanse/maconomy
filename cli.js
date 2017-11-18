@@ -33,41 +33,51 @@ program
   .version(require('./package.json').version)
   .option('--debug', 'show json responses');
 
-program.command('login').action(
-  createAction(async () => {
-    prompt.start();
-    const { username, password } = await promisify(prompt.get)({
-      properties: {
-        username: {
-          required: true
-        },
-        password: {
-          hidden: true,
-          required: true
+program
+  .command('login')
+  .description('start a new session')
+  .action(
+    createAction(async () => {
+      prompt.start();
+      const { username, password } = await promisify(prompt.get)({
+        properties: {
+          username: {
+            required: true
+          },
+          password: {
+            hidden: true,
+            required: true
+          }
         }
-      }
-    });
+      });
 
-    const response = await api.login(username, password);
+      const response = await api.login(username, password);
 
-    program.debug && log(response);
+      program.debug && log(response);
 
-    const { sessionId, employeeName, employeeNumber, company } = transformLogin(
-      response
-    );
+      const {
+        sessionId,
+        employeeName,
+        employeeNumber,
+        company
+      } = transformLogin(response);
 
-    await storeSession(sessionId);
+      await storeSession(sessionId);
 
-    console.log(
-      `Got session for #${yellow(employeeNumber)} ${employeeName} ${company}`
-    );
-  })
-);
+      console.log(
+        `Got session for #${yellow(employeeNumber)} ${employeeName} ${company}`
+      );
+    })
+  );
 
-program.command('show [date]').action(createAction(withSessionId(show)));
+program
+  .command('show [date]')
+  .description('show the timesheet for the given date')
+  .action(createAction(withSessionId(show)));
 
 program
   .command('add <projectId> <task> <hours> <date> [text] [lineKey]')
+  .description('add a line to the timesheet')
   .action(
     createAction(
       withSessionId(async (sessionId, ...args) => {
@@ -90,60 +100,71 @@ program
     )
   );
 
-program.command('delete <lineKey> [date]').action(
-  createAction(
-    withSessionId(async (sessionId, lineKey, date) => {
-      const response = await api.deleteTimesheetEntry(
-        sessionId,
-        toTimeSheetLineId(lineKey),
-        date || new Date()
-      );
-      program.debug && log(response);
-      await show(sessionId);
-    })
-  )
-);
+program
+  .command('delete <lineKey> [date]')
+  .description('delete a line from the timesheet')
+  .action(
+    createAction(
+      withSessionId(async (sessionId, lineKey, date) => {
+        const response = await api.deleteTimesheetEntry(
+          sessionId,
+          toTimeSheetLineId(lineKey),
+          date || new Date()
+        );
+        program.debug && log(response);
+        await show(sessionId);
+      })
+    )
+  );
 
 program
   .command('delete-all [date]')
+  .description('wipe the current timesheet (very destructive)')
   .action(createAction(withSessionId(deleteAll)));
 
-program.command('search [query]').action(
-  createAction(
-    withSessionId(async (sessionId, query) => {
-      const response = await api.recentlyUsedJobSearch(sessionId, query);
-      const items = response.SearchData.map(item => ({
-        projectId: item.KeyValue,
-        name: item.DisplayValue
-      }));
+program
+  .command('search [query]')
+  .description('search for recently used projects')
+  .action(
+    createAction(
+      withSessionId(async (sessionId, query) => {
+        const response = await api.recentlyUsedJobSearch(sessionId, query);
+        const items = response.SearchData.map(item => ({
+          projectId: item.KeyValue,
+          name: item.DisplayValue
+        }));
 
-      program.debug && log(response);
-      items.forEach(({ projectId, name }) => {
-        console.log(`${projectId} ${name}`);
-      });
-    })
-  )
-);
+        program.debug && log(response);
+        items.forEach(({ projectId, name }) => {
+          console.log(`${projectId} ${name}`);
+        });
+      })
+    )
+  );
 
-program.command('tasks <projectId> [query]').action(
-  createAction(
-    withSessionId(async (sessionId, projectId, query) => {
-      const response = await api.taskSearch(sessionId, projectId, query);
-      const items = response.SearchData.map(item => ({
-        projectId: item.KeyValue,
-        name: item.DisplayValue
-      }));
+program
+  .command('tasks <projectId> [query]')
+  .description('list tasks available to specific project')
+  .action(
+    createAction(
+      withSessionId(async (sessionId, projectId, query) => {
+        const response = await api.taskSearch(sessionId, projectId, query);
+        const items = response.SearchData.map(item => ({
+          projectId: item.KeyValue,
+          name: item.DisplayValue
+        }));
 
-      program.debug && log(response);
-      items.forEach(({ projectId, name }) => {
-        console.log(`${projectId} ${name}`);
-      });
-    })
-  )
-);
+        program.debug && log(response);
+        items.forEach(({ projectId, name }) => {
+          console.log(`${projectId} ${name}`);
+        });
+      })
+    )
+  );
 
 program
   .command('import')
+  .description('import timesheets from various formats')
   .option('--from <format>', 'format to convert from (currently csv only)')
   .option('--start-date [startDate]', 'the date of the first column')
   .option('--keep', 'keep existing lines when importing')
