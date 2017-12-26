@@ -174,6 +174,8 @@ program
         const { parse } = require('csv-string');
         const lines = parse(await readStream(process.stdin));
 
+        sanityCheckImportedData(lines);
+
         const add = async (projectId, task, hours, date, text, lineKey) => {
           const response = await api.saveTimesheetEntry({
             sessionId,
@@ -352,4 +354,62 @@ async function deleteAll(sessionId, date) {
       );
     })
   );
+}
+
+function sanityCheckImportedData(data) {
+  const problems = {};
+  for (const line of data) {
+    problems[line] = [];
+
+    if (line.length !== 10) {
+      problems[line].push(
+        `should have exactly 10 columns, but got ${line.length}`
+      );
+    }
+
+    for (const [index, day] of [
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday'
+    ].map((day, index) => [index + 2, day])) {
+      const hours = parseFloat(line[index]);
+      if (hours < 0 || hours > 24) {
+        problems[line].push(
+          `${day} must have a decimal value between 0 and 24, but got ${hours}`
+        );
+      }
+    }
+
+    if (!/^[\d-]+$/.test(line[0])) {
+      problems[line].push(
+        `The project number must be numeric (w/ optional dashes), but got ${
+          line[0]
+        }`
+      );
+    }
+
+    if (!/^[\d-]+$/.test(line[1])) {
+      problems[line].push(`The task must be a number, but got ${line[1]}`);
+    }
+
+    if (typeof line[9] !== 'undefined' && line[9].length === 0) {
+      problems[line].push(`The remark text in the last column must be present`);
+    }
+  }
+
+  if (Object.values(problems).some(errors => errors.length > 0)) {
+    const problemsString = Object.entries(problems)
+      .map(([line, errors]) => {
+        return `${chalk.yellow(line)}\n${errors
+          .map(error => `^ ${error}\n`)
+          .join('')}`;
+      })
+      .join('');
+
+    throw new Error(`CSV Validation Error\n\n${problemsString}`);
+  }
 }
