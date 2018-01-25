@@ -384,7 +384,7 @@ function sanityCheckImportedData(data) {
       }
     }
 
-    if (!/^[\d-]+$/.test(line[0])) {
+    if (!/^[\d-]+$/.test(line[0].trim())) {
       problems[line].push(
         `The project number must be numeric (w/ optional dashes), but got ${
           line[0]
@@ -392,7 +392,7 @@ function sanityCheckImportedData(data) {
       );
     }
 
-    if (!/^[\d-]+$/.test(line[1])) {
+    if (!/^[\d-]+$/.test(line[1].trim())) {
       problems[line].push(`The task must be a number, but got ${line[1]}`);
     }
 
