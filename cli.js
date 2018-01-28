@@ -208,6 +208,10 @@ program
 
           await Promise.all(
             otherDays.map((otherDay, index) => {
+              if (otherDay === 0) {
+                return Promise.resolve();
+              }
+
               const newDate = addDays(date, index + 1);
               return add(projectId, task, otherDay, newDate, text, lineId);
             })
