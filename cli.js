@@ -396,8 +396,8 @@ function sanityCheckImportedData(data) {
       );
     }
 
-    if (!/^[\d-]+$/.test(line[1].trim())) {
-      problems[line].push(`The task must be a number, but got ${line[1]}`);
+    if (!/^[\w-]+$/.test(line[1].trim())) {
+      problems[line].push(`The task number looks invalid, got ${line[1]}`);
     }
 
     if (typeof line[9] !== 'undefined' && line[9].length === 0) {
