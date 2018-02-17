@@ -1,0 +1,21 @@
+{
+  "name": "maconomy",
+  "version": "0.5.0",
+  "author": {
+    "name": "Hanse",
+    "email": "hanse19@gmail.com"
+  },
+  "bin": {
+    "maconomy": "./cli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hanse/maconomy.git"
+  },
+  "license": "",
+  "dependencies": {
+    "date-fns": "^1.29.0",
+    "form-urlencoded": "^2.0.4",
+    "isomorphic-fetch": "^2.2.1"
+  }
+}

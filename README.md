@@ -4,8 +4,10 @@ Maconomy JavaScript library and a simple CLI.
 
 ## Installation
 ```bash
-npm install -g maconomy
+npm install -g maconomy-cli
 ```
+
+will give you an executable called `maconomy` that can be used to interact with Maconomy. The JavaScript library is available on NPM as `maconomy`: `yarn add maconomy`.
 
 ## Usage
 ```bash

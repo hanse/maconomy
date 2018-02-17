@@ -12,7 +12,7 @@ const parse = require('date-fns/parse');
 const format = require('date-fns/format');
 const addDays = require('date-fns/add_days');
 const startOfWeek = require('date-fns/start_of_week');
-const createClient = require('./');
+const createClient = require('maconomy');
 const { transformLogin, transformLines } = require('./transformers');
 const log = response => console.log(JSON.stringify(response, null, 2));
 
