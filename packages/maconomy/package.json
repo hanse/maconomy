@@ -8,6 +8,9 @@
   "bin": {
     "maconomy": "./cli.js"
   },
+  "scripts": {
+    "test": "jest"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Hanse/maconomy.git"
@@ -17,5 +20,8 @@
     "date-fns": "^1.29.0",
     "form-urlencoded": "^2.0.4",
     "isomorphic-fetch": "^2.2.1"
+  },
+  "devDependencies": {
+    "jest": "^22.3.0"
   }
 }

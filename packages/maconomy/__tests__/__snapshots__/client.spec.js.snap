@@ -1,0 +1,121 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`deleteTimesheetEntry(sessionId, lineKey, date) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22SearchName%22%3A%22TaskSearch%22%2C%22Fields%22%3A%5B%7B%22Name%22%3A%22SearchText%22%2C%22Value%22%3A%22%22%7D%2C%7B%22Name%22%3A%22JobNumber%22%2C%22Value%22%3A%22a-b-c%22%7D%5D%2C%22operation%22%3A%22search%22%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%2C%22sessionid%22%3A123%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`getPeriod(sessionId, startDate, endDate) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22inputTheDate%22%3A%222018.02.05%22%2C%22startDate%22%3A%222018.02.05%22%2C%22endDate%22%3A%222018.02.10%22%2C%22includeLineMetadata%22%3Atrue%2C%22lineFields%22%3A%22JobNameVar%2CJobNumber%2CTaskName%2CEntryText%2CTaskDescriptionVar%2CCustomerNameVar%2CInvoiceable%2CApprovalStatus%2CCommentProjectManager%2CTheDate%2CNumberOf%2CDailyDescription%2CActivityNumber%2CActivityTextVar%2CPermanentLine%22%2C%22operation%22%3A%22getperiod%22%2C%22sessionid%22%3A123%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`getTimesheetPeriods(sessionId) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22operation%22%3A%22gettimesheetperiods%22%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%2C%22sessionid%22%3A123%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`getTimesheetTotals(sessionId, fromDate, toDate) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22operation%22%3A%22gettimesheetperiods%22%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%2C%22sessionid%22%3A123%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`login(username, password) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22username%22%3A%22demo%22%2C%22password%22%3A%22demo%22%2C%22includeScreenLayouts%22%3Afalse%2C%22operation%22%3A%22login%22%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%7D%7D&functionname=executerequest&macurl=localhost%3A8000",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`recentlyUsedJobSearch(sessionId, query) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22SearchName%22%3A%22RecentlyUsedJobsSearch%22%2C%22Fields%22%3A%5B%7B%22Name%22%3A%22SearchText%22%2C%22Value%22%3A%221095123%22%7D%5D%2C%22operation%22%3A%22search%22%2C%22sessionid%22%3A123%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`saveTimesheetEntry({sessionId,date,task,hours,projectId,text,dailyDescription,lineKey} 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22theDate%22%3A%222018.02.05%22%2C%22InstanceKey%22%3A%22a-b-c%22%2C%22Fields%22%3A%7B%22Favorite%22%3A%22%22%2C%22JobNumber%22%3A%221095123%22%2C%22TaskName%22%3A%229202%22%2C%22DailyDescription%22%3A%22CS-1%22%2C%22NumberOf%22%3A%22%275.5%27%22%2C%22EntryText%22%3A%22CS-1%22%2C%22PermanentLine%22%3A%22false%22%2C%22InternalJob%22%3A%22true%22%2C%22LineCurrentApprovalStatusDescriptionVar%22%3A%22%22%2C%22LineCurrentApprovalStatusVar%22%3A%22%22%2C%22CommentProjectManager%22%3A%22%22%2C%22Invoiceable%22%3A%22false%22%2C%22ApprovalStatus%22%3A%22%22%2C%22EntryDate%22%3A%222018.02.05%22%2C%22createfavorite%22%3A%22undefined%22%7D%2C%22reopenIfSubmitted%22%3Afalse%2C%22DisplayFields%22%3A%22JobNameVar%2CEntryText%2CJobNumber%2CTaskName%2CTaskDescriptionVar%2CCustomerNameVar%2CInvoiceable%2CApprovalStatus%2CCommentProjectManager%2CTheDate%2CNumberOf%2CDailyDescription%2CActivityNumber%2CActivityTextVar%2CPermanentLine%22%2C%22operation%22%3A%22savetimesheetentry%22%2C%22sessionid%22%3A123%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
+
+exports[`taskSearch(sessionId, projectId, value) 1`] = `
+Array [
+  Array [
+    "localhost:8000",
+    Object {
+      "body": "requestobj=%7B%22inpObj%22%3A%7B%22SearchName%22%3A%22TaskSearch%22%2C%22Fields%22%3A%5B%7B%22Name%22%3A%22SearchText%22%2C%22Value%22%3A%22%22%7D%2C%7B%22Name%22%3A%22JobNumber%22%2C%22Value%22%3A%221095123%22%7D%5D%2C%22operation%22%3A%22search%22%2C%22clean%22%3Afalse%2C%22calfocus%22%3Afalse%2C%22impersonate%22%3Afalse%2C%22maccharset%22%3A%22UTF-8%22%2C%22lang%22%3A%22en_US%22%2C%22locale%22%3A%22en_US%22%2C%22sessionid%22%3A123%7D%7D&functionname=executerequest&macurl=localhost%3A8000&sessionid=123",
+      "headers": Object {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      "method": "POST",
+    },
+  ],
+]
+`;
