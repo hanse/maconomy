@@ -30,12 +30,17 @@ module.exports = function createClient({ rpcUrl }) {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
-      .then(res => res.json())
+      .then(res => res.text())
+      .then(text => {
+        try {
+          return JSON.parse(text);
+        } catch (error) {
+          throw new Error(`Could not parse JSON: ${text}. ${error.message}`);
+        }
+      })
       .then(json => {
         if (!json.ok) {
-          const error = new Error(
-            `Maconomy Error: ${json.Message || json.message || 'Unknown'}`
-          );
+          const error = new Error(`Maconomy Error: ${json.Message || json.message || 'Unknown'}`);
           error.response = json;
           throw error;
         }
