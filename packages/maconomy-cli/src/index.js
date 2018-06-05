@@ -27,9 +27,7 @@ if (!rpcUrl) {
 
 const api = createClient({ rpcUrl });
 
-program
-  .version(require('../package.json').version)
-  .option('--debug', 'show json responses');
+program.version(require('../package.json').version).option('--debug', 'show json responses');
 
 program
   .command('login')
@@ -53,18 +51,11 @@ program
 
       program.debug && log(response);
 
-      const {
-        sessionId,
-        employeeName,
-        employeeNumber,
-        company
-      } = transformLogin(response);
+      const { sessionId, employeeName, employeeNumber, company } = transformLogin(response);
 
       await storeSession(sessionId);
 
-      console.log(
-        `Got session for #${yellow(employeeNumber)} ${employeeName} ${company}`
-      );
+      console.log(`Got session for #${yellow(employeeNumber)} ${employeeName} ${company}`);
     })
   );
 
@@ -185,9 +176,7 @@ program
             lineKey: toTimeSheetLineId(lineKey)
           });
 
-          return fromTimeSheetLineId(
-            response.Line ? response.Line.InstanceKey : null
-          );
+          return fromTimeSheetLineId(response.Line ? response.Line.InstanceKey : null);
         };
 
         const date = options.startDate
@@ -200,7 +189,13 @@ program
 
         for (const line of lines) {
           const [projectId, task, ...rest] = line;
-          const [firstDayOfWeek, ...otherDays] = rest.slice(0, 7);
+          const days = rest.slice(0, 7).map(day => parseFloat(day));
+
+          if (days.every(day => day === 0)) {
+            continue;
+          }
+
+          const [firstDayOfWeek, ...otherDays] = days;
           const text = rest[7];
           const lineId = await add(projectId, task, firstDayOfWeek, date, text);
 
@@ -264,9 +259,7 @@ function withSessionId(action) {
   return async (...args) => {
     const sessionId = await getSession();
     if (!sessionId) {
-      throw new Error(
-        `Session ID is missing. You must login first using 'maconomy login'.`
-      );
+      throw new Error(`Session ID is missing. You must login first using 'maconomy login'.`);
     }
 
     return action(sessionId, ...args);
@@ -308,15 +301,7 @@ async function show(sessionId, date) {
 
   const lines = transformLines(data);
   lines.forEach(line => {
-    const {
-      key,
-      name,
-      projectId,
-      task,
-      entryText,
-      taskDescription,
-      daily
-    } = line;
+    const { key, name, projectId, task, entryText, taskDescription, daily } = line;
 
     table.push([
       projectId,
@@ -343,17 +328,11 @@ async function deleteAll(sessionId, date) {
 
   const lines = transformLines(data);
 
-  const lineKeys = lines
-    .map(line => fromTimeSheetLineId(line.key))
-    .filter(Boolean);
+  const lineKeys = lines.map(line => fromTimeSheetLineId(line.key)).filter(Boolean);
 
   await Promise.all(
     lineKeys.map(lineKey => {
-      return api.deleteTimesheetEntry(
-        sessionId,
-        toTimeSheetLineId(lineKey),
-        date
-      );
+      return api.deleteTimesheetEntry(sessionId, toTimeSheetLineId(lineKey), date);
     })
   );
 }
@@ -364,9 +343,7 @@ function sanityCheckImportedData(data) {
     problems[line] = [];
 
     if (line.length !== 10) {
-      problems[line].push(
-        `should have exactly 10 columns, but got ${line.length}`
-      );
+      problems[line].push(`should have exactly 10 columns, but got ${line.length}`);
     }
 
     for (const [index, day] of [
@@ -380,17 +357,13 @@ function sanityCheckImportedData(data) {
     ].map((day, index) => [index + 2, day])) {
       const hours = parseFloat(line[index]);
       if (hours < 0 || hours > 24) {
-        problems[line].push(
-          `${day} must have a decimal value between 0 and 24, but got ${hours}`
-        );
+        problems[line].push(`${day} must have a decimal value between 0 and 24, but got ${hours}`);
       }
     }
 
     if (!/^[\d-]+$/.test(line[0].trim())) {
       problems[line].push(
-        `The project number must be numeric (w/ optional dashes), but got ${
-          line[0]
-        }`
+        `The project number must be numeric (w/ optional dashes), but got ${line[0]}`
       );
     }
 
@@ -406,9 +379,7 @@ function sanityCheckImportedData(data) {
   if (Object.values(problems).some(errors => errors.length > 0)) {
     const problemsString = Object.entries(problems)
       .map(([line, errors]) => {
-        return `${chalk.yellow(line)}\n${errors
-          .map(error => `^ ${error}\n`)
-          .join('')}`;
+        return `${chalk.yellow(line)}\n${errors.map(error => `^ ${error}\n`).join('')}`;
       })
       .join('');
 
